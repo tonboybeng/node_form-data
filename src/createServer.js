@@ -25,7 +25,7 @@ function createServer() {
         const expense = JSON.parse(body);
 
         if (!expense.date || !expense.title || !expense.amount) {
-          res.writeHead(400, { 'Content-Type': 'text/html' });
+          res.writeHead(400, { 'Content-Type': 'text/plain' });
 
           res.end(
             // eslint-disable-next-line max-len
@@ -38,7 +38,7 @@ function createServer() {
         fs.appendFileSync(dataPath, JSON.stringify(expense));
 
         // res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.writeHead(200, { 'Content-Type': 'text/html' });
 
         res.write(`${JSON.stringify(expense)}`);
 
