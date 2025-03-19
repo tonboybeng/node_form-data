@@ -25,7 +25,7 @@ function createServer() {
         const expense = JSON.parse(body);
 
         if (!expense.date || !expense.title || !expense.amount) {
-          res.writeHead(400);
+          res.writeHead(400, { 'Content-Type': 'text/html' });
 
           res.end(
             // eslint-disable-next-line max-len
@@ -35,11 +35,14 @@ function createServer() {
           return;
         }
 
-        fs.writeFileSync(dataPath, JSON.stringify(expense));
+        fs.appendFileSync(dataPath, JSON.stringify(expense));
 
-        res.writeHead(200, { 'Content-Type': 'application/json' });
+        // res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
 
-        res.end(JSON.stringify(expense));
+        res.write(`${JSON.stringify(expense)}`);
+
+        res.end();
       });
 
       return;
@@ -57,11 +60,16 @@ function createServer() {
       res.write('const body = { date: date, title: title, amount: amount };');
 
       res.write(
+        // eslint-disable-next-line max-len
         'fetch("/add-expense", { method: "POST", body: JSON.stringify(body) })',
       );
 
       res.write('.then(response => response.json())');
-      res.write('.then(data => { console.log(data); });');
+
+      res.write(
+        // eslint-disable-next-line max-len
+        '.then(data => { document.getElementById("message").innerHTML = JSON.stringify(data) });',
+      );
 
       res.write('return false;');
 
@@ -78,8 +86,8 @@ function createServer() {
       res.write('<label for="amount">Amount: </label>');
       res.write('<input type="text" id="amount" name="amount"><br>');
 
-      res.write('<input type="submit" value="submit"<br>');
-
+      res.write('<input type="submit" value="submit"><br>');
+      res.write('<label id="message"></label><br>');
       res.write('</form>');
 
       res.end();
@@ -87,7 +95,7 @@ function createServer() {
       return;
     }
 
-    res.writeHead(404);
+    res.writeHead(404, { 'Content-Type': 'text/plain' });
 
     res.end('Error: Invalid Url');
   });
